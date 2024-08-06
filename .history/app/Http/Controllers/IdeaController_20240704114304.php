@@ -39,7 +39,6 @@ class IdeaController extends Controller
             'innovation' => 'nullable|string',
             'improvement' => 'nullable|string',
             'problem' => 'nullable|string',
-            'scope' => 'nullable|string',
             'effectuate' => 'nullable|string',
             'others' => 'nullable|string',
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
@@ -64,7 +63,6 @@ class IdeaController extends Controller
             'innovation' => $request->input('innovation'),
             'improvement' => $request->input('improvement'),
             'problem' => $request->input('problem'),
-            'scope' => $request->input('scope'),
             'effectuate' => $request->input('effectuate'),
             'others' => $request->input('others'),
             'picture' => $picturePath,
@@ -152,7 +150,7 @@ class IdeaController extends Controller
 
         $data = $request->only([
             'user_id', 'name', 'category', 'division', 'innovation',
-            'improvement', 'problem', 'scope', 'effectuate', 'others', 'picture',
+            'improvement', 'problem', 'effectuate', 'others', 'picture',
             'proposal', 'description', 'status', 'submitted_name',
             'submitted_department', 'submitted_zone', 'start_date', 'end_date'
         ]);

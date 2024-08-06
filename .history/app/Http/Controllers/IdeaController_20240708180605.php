@@ -26,7 +26,7 @@ class IdeaController extends Controller
             $idea->proposal = $idea->proposal ? 'https://bloomx.live/' . $idea->proposal : null;
         }
 
-        return response(['data' => $ideas], 200);
+        return response($ideas, 200);
     }
 
     public function create(Request $request)
@@ -39,7 +39,6 @@ class IdeaController extends Controller
             'innovation' => 'nullable|string',
             'improvement' => 'nullable|string',
             'problem' => 'nullable|string',
-            'scope' => 'nullable|string',
             'effectuate' => 'nullable|string',
             'others' => 'nullable|string',
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
@@ -64,7 +63,6 @@ class IdeaController extends Controller
             'innovation' => $request->input('innovation'),
             'improvement' => $request->input('improvement'),
             'problem' => $request->input('problem'),
-            'scope' => $request->input('scope'),
             'effectuate' => $request->input('effectuate'),
             'others' => $request->input('others'),
             'picture' => $picturePath,
@@ -86,7 +84,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('user_id', $user_id)->get();
         if ($idea->isNotEmpty()) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'No ideas for this user!'], 400);
         }
@@ -96,7 +94,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('id', $id)->first();
         if ($idea) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'This idea does not exist!'], 400);
         }
@@ -106,7 +104,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('department', $department)->get();
         if ($idea->isNotEmpty()) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'The department has no ideas saved!'], 400);
         }
@@ -116,7 +114,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('zone', $zone)->get();
         if ($idea->isNotEmpty()) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'The zone has no ideas saved!'], 400);
         }
@@ -126,7 +124,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('category', $category)->get();
         if ($idea->isNotEmpty()) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'No ideas saved in this category!'], 400);
         }
@@ -136,7 +134,7 @@ class IdeaController extends Controller
     {
         $idea = Ideas::where('division', $division)->get();
         if ($idea->isNotEmpty()) {
-            return response(['data' => $idea], 200);
+            return response($idea, 200);
         } else {
             return response(['message' => 'No ideas saved in this division!'], 400);
         }
@@ -152,7 +150,7 @@ class IdeaController extends Controller
 
         $data = $request->only([
             'user_id', 'name', 'category', 'division', 'innovation',
-            'improvement', 'problem', 'scope', 'effectuate', 'others', 'picture',
+            'improvement', 'problem', 'effectuate', 'others', 'picture',
             'proposal', 'description', 'status', 'submitted_name',
             'submitted_department', 'submitted_zone', 'start_date', 'end_date'
         ]);

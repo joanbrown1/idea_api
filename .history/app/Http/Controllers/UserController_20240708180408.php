@@ -30,7 +30,7 @@ class UserController extends Controller
             $user->profile_pic = $user->profile_pic ? 'https://bloomx.live/' . $user->profile_pic : null;
         }
 
-        return response(['data' => $users], 200);
+        return response($users, 200);
     }
 
     public function generateToken($id)
@@ -67,7 +67,7 @@ class UserController extends Controller
             return response(['message' => 'Incorrect Credentials'], 400);
         }
 
-        return response(['data' => $user], 200);
+        return response($user, 200);
     }
 
     public function register(Request $request)
@@ -122,7 +122,7 @@ class UserController extends Controller
     {
         $user = User::where('email', $email)->first();
         if ($user) {
-            return response(['data' => $user], 200);
+            return response($user, 200);
         } else {
             return response(['message' => 'User does not exist!'], 400);
         }
@@ -132,7 +132,7 @@ class UserController extends Controller
     {
         $user = User::where('id', $id)->first();
         if ($user) {
-            return response(['data' => $user], 200);
+            return response($user, 200);
         } else {
             return response(['message' => 'User does not exist!'], 400);
         }
@@ -142,7 +142,7 @@ class UserController extends Controller
     {
         $user = User::where('department', $department)->get();
         if ($user->isNotEmpty()) {
-            return response(['data' => $user], 200);
+            return response($user, 200);
         } else {
             return response(['message' => 'User does not exist!'], 400);
         }
@@ -152,7 +152,7 @@ class UserController extends Controller
     {
         $user = User::where('zone', $zone)->get();
         if ($user->isNotEmpty()) {
-            return response(['data' => $user], 200);
+            return response($user, 200);
         } else {
             return response(['message' => 'User does not exist!'], 400);
         }

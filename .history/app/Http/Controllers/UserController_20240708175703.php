@@ -67,7 +67,7 @@ class UserController extends Controller
             return response(['message' => 'Incorrect Credentials'], 400);
         }
 
-        return response(['data' => $user], 200);
+        return response($user, 200);
     }
 
     public function register(Request $request)

@@ -67,15 +67,17 @@ class UserController extends Controller
             return response(['message' => 'Incorrect Credentials'], 400);
         }
 
-        return response(['data' => $user], 200);
+        return response(['data' => $user, 'token' => $this->generateToken($user->id)], 200);
     }
 
     public function register(Request $request)
     {
    
         $request->validate([
+            'name' => 'required',
             'phone_number' => 'required',
             'email' => 'required|email|unique:users',
+            'gender' => 'required',
             'password' => 'required|min:8',
            
         ], [

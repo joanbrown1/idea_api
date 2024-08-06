@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Admin;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class UserController extends Controller
+class AdminController extends Controller
 {
     protected $encryptionKey;
 
@@ -17,20 +17,14 @@ class UserController extends Controller
         $this->encryptionKey = env('JWT_KEY');
     }
 
-
-
-    public function index(){
-        return 'welcome';
-    }
-
-    public function allUsers(Request $request)
+    public function allAdmins(Request $request)
     {
-        $users = User::all();
-        foreach ($users as $user) {
-            $user->profile_pic = $user->profile_pic ? 'https://bloomx.live/' . $user->profile_pic : null;
+        $admins = Admin::all();
+        foreach ($admins as $admin) {
+            $admin->profile_pic = $admin->profile_pic ? 'https://bloomx.live/' . $admin->profile_pic : null;
         }
 
-        return response(['data' => $users], 200);
+        return response(['data' => $admins], 200);
     }
 
     public function generateToken($id)
@@ -55,39 +49,37 @@ class UserController extends Controller
             'password' => 'required'
         ]);
 
-        $user = User::whereEmail($request->email)->first();
+        $admin = Admin::whereEmail($request->email)->first();
 
-        // Find user
-        if (!$user) {
+        // Find admin
+        if (!$admin) {
             return response(['message' => 'Please register'], 400);
         }
 
         // Validate password
-        if (!password_verify($request->password, $user->password)) {
+        if (!password_verify($request->password, $admin->password)) {
             return response(['message' => 'Incorrect Credentials'], 400);
         }
 
-        return response(['data' => $user], 200);
+        return response(['data' => $admin, 'token' => $this->generateToken($admin->id)], 200);
     }
 
     public function register(Request $request)
     {
-   
         $request->validate([
+            'name' => 'required',
             'phone_number' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-           
+            'email' => 'required|email|unique:admins',
+            'gender' => 'required',
+            'password' => 'required|min:8'
         ], [
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email address is already taken.',
-            'password.min' => 'The password must be at least 8 characters.',
-       
+            'password.min' => 'The password must be at least 8 characters.'
         ]);
-         
 
-        if (User::whereEmail($request->email)->exists()) {
-            return response(['message' => 'User exists!, Please login to continue'], 400);
+        if (Admin::whereEmail($request->email)->exists()) {
+            return response(['message' => 'admin exists!, Please login to continue'], 400);
         }
 
         $verification_code = md5(time()) . md5(uniqid());
@@ -98,9 +90,8 @@ class UserController extends Controller
             $filePath = $request->file('profile_pic')->store('avatar', env('DEFAULT_DISK'));
         }
 
-  
 
-        $user = new User([
+        $admin = new Admin([
             'title' => $request->input('title'),
             'name' => $request->input('name'),
             'phone_number' => $request->input('phone_number'),
@@ -109,60 +100,61 @@ class UserController extends Controller
             'department' => $request->input('department'),
             'zone' => $request->input('zone'),
             'staff' => $request->input('staff'),
+            'role' => $request->input('role'),
             'password' => bcrypt($request->input('password')),
             'profile_pic' => $filePath,
             'token' => $verification_code,
         ]);
-        $user->save();
+        $admin->save();
 
         return response(['message' => 'Thank you for registering. Please login to continue!'], 200);
     }
 
-    public function UsersByEmail(Request $request, $email)
+    public function AdminsByEmail(Request $request, $email)
     {
-        $user = User::where('email', $email)->first();
-        if ($user) {
-            return response(['data' => $user], 200);
+        $admin = Admin::where('email', $email)->first();
+        if ($admin) {
+            return response(['data' => $admin], 200);
         } else {
-            return response(['message' => 'User does not exist!'], 400);
+            return response(['message' => 'admin does not exist!'], 400);
         }
     }
 
-    public function UsersById(Request $request, $id)
+    public function AdminsById(Request $request, $id)
     {
-        $user = User::where('id', $id)->first();
-        if ($user) {
-            return response(['data' => $user], 200);
+        $admin = Admin::where('id', $id)->first();
+        if ($admin) {
+            return response(['data' => $admin], 200);
         } else {
-            return response(['message' => 'User does not exist!'], 400);
+            return response(['message' => 'admin does not exist!'], 400);
         }
     }
 
-    public function UsersByDepartment(Request $request, $department)
+    public function AdminsByDepartment(Request $request, $department)
     {
-        $user = User::where('department', $department)->get();
-        if ($user->isNotEmpty()) {
-            return response(['data' => $user], 200);
+        $admin = Admin::where('department', $department)->get();
+        if ($admin->isNotEmpty()) {
+            return response(['data' => $admin], 200);
         } else {
-            return response(['message' => 'User does not exist!'], 400);
+            return response(['message' => 'admin does not exist!'], 400);
         }
     }
 
-    public function UsersByZone(Request $request, $zone)
+    public function AdminsByZone(Request $request, $zone)
     {
-        $user = User::where('zone', $zone)->get();
-        if ($user->isNotEmpty()) {
-            return response(['data' => $user], 200);
+        $admin = Admin::where('zone', $zone)->get();
+        if ($admin->isNotEmpty()) {
+            return response(['data' => $admin], 200);
         } else {
-            return response(['message' => 'User does not exist!'], 400);
+            return response(['message' => 'admin does not exist!'], 400);
         }
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
-        if (!$user) {
-            return response(['message' => 'User not found'], 404);
+        $admin = Admin::find($id);
+        if (!$admin) {
+            return response(['message' => 'admin not found'], 404);
         }
 
         $data = $request->only([
@@ -172,8 +164,8 @@ class UserController extends Controller
 
         if ($request->hasFile('profile_pic')) {
             // Delete the old profile picture if it exists
-            if ($user->profile_pic) {
-                Storage::disk(env('DEFAULT_DISK'))->delete($user->profile_pic);
+            if ($admin->profile_pic) {
+                Storage::disk(env('DEFAULT_DISK'))->delete($admin->profile_pic);
             }
             $data['profile_pic'] = $request->file('profile_pic')->store('avatar', env('DEFAULT_DISK'));
         }
@@ -182,8 +174,8 @@ class UserController extends Controller
             $data['password'] = bcrypt($data['password']);
         }
 
-        $user->update(array_filter($data, fn($value) => !is_null($value)));
+        $admin->update(array_filter($data, fn($value) => !is_null($value)));
 
-        return response(['message' => 'User updated successfully', 'data' => $user], 200);
+        return response(['message' => 'admin updated successfully', 'data' => $admin], 200);
     }
 }
